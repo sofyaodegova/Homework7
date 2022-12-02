@@ -4,34 +4,48 @@ public class NegativeTests {
     public static void main(String[] args) {
     }
 
-    String token = RestRequests.getToken().jsonPath().get("token");
-    String reason = RestRequests.getToken().jsonPath().get("reason");
-    String bookingId = "psd45";
-
     @Test
-    public void getTokenNegative() {
-        RestRequests.getToken();
-        if (reason != null) {
-            System.out.println("Не получили токен. Причина: " + reason);
-        } else if (token != null) {
-            System.out.println("Получили токен: " + token);
-        }
+    public void negativeTestGetToken() {
+        String addBody = "{\n\"username\":\"addmin\"," +
+                "\n\"password\":\"password1263\"\n}";
+        String reason = RestRequests.getToken(addBody).jsonPath().get("reason");
+
+        System.out.println("Не получили токен. Причина: " + reason);
     }
 
     @Test
-    public void createBookingNegative() {
-        RestRequests.createBookingNegative();
+    public void negativeTestCreateBooking() {
+        String addBody = "{\n" +
+                "    \"firstnammmmme\": \"Sofya\",\n" +
+                "    \"lastname\": \"Odegova\",\n" +
+                "    \"totalprice\": 3500,\n" +
+                "    \"depositpaid\": true,\n" +
+                "    \"bookingdates\": {\n" +
+                "        \"checkin\": \"2022-07-13\",\n" +
+                "        \"checkout\": \"2022-07-23\"\n" +
+                "    },\n" +
+                "    \"additionalneeds\": \"Breakfast\"\n" +
+                "}";
+        int expectedStatusCode = 500;
+        System.out.println("Бронирование не было создано, id не получен. Ошибка: " + RestRequests.createBooking(addBody, expectedStatusCode).statusLine());
     }
 
     @Test
-    public void getBookingNegative() {
+    public void negativeTestGetBooking() {
+        String bookingId = "psd45";
         int expectedStatusCode = 404;
-        RestRequests.getBooking(bookingId, expectedStatusCode);
+        System.out.println("Ошибка: " + RestRequests.getBooking(bookingId, expectedStatusCode).getStatusLine());
     }
 
     @Test
-    public void deleteBookingNegative() {
-        int expectedStatusCode = 405;
-        RestRequests.deleteBooking(token, bookingId, expectedStatusCode);
+    public void negativeTestDeleteBooking() {
+        int expectedStatusCode = 200;
+
+        String addBodyToken = "{\n\"username\":\"admin\"," +
+                "\n\"password\":\"password123\"\n}";
+        String token = RestRequests.getToken(addBodyToken).jsonPath().get("token");
+        String bookingId = "psd45";
+        int statusCode = 405;
+        System.out.println("Ошибка удаления. Статус: " + RestRequests.deleteBooking(token, bookingId, statusCode).statusLine());
     }
 }

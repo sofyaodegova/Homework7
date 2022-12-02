@@ -11,10 +11,9 @@ public class RestRequests {
                 .contentType(ContentType.JSON);
     }
 
-    public static Response getToken() {
+    public static Response getToken(String addBody) {
         Response response = getBaseRequest()
-                .body("{\n\"username\":\"admin\"," +
-                        "\n\"password\":\"password123\"\n}")
+                .body(addBody)
                 .log().body(true)
                 .contentType(ContentType.JSON)
                 .post("/auth")
@@ -26,65 +25,30 @@ public class RestRequests {
         return response;
     }
 
-    public static String createBookingPositive() {
-        String response = getBaseRequest()
-                .body("{\n" +
-                        "    \"firstname\": \"Sofya\",\n" +
-                        "    \"lastname\": \"Odegova\",\n" +
-                        "    \"totalprice\": 3500,\n" +
-                        "    \"depositpaid\": true,\n" +
-                        "    \"bookingdates\": {\n" +
-                        "        \"checkin\": \"2022-07-13\",\n" +
-                        "        \"checkout\": \"2022-07-23\"\n" +
-                        "    },\n" +
-                        "    \"additionalneeds\": \"Breakfast\"\n" +
-                        "}")
+    public static Response createBooking(String addBody, Integer expectedStatusCode) {
+        Response response = getBaseRequest()
+                .body(addBody)
                 .log().body(true)
                 .contentType(ContentType.JSON)
                 .post("/booking")
                 .then()
-                .statusCode(200)
+                .statusCode(expectedStatusCode)
                 .extract()
-                .response().jsonPath().get("bookingid").toString();
-        String bookingId = response;
+                .response();
         return response;
     }
-    public static void createBookingNegative() {
 
-        String response = getBaseRequest()
-                .body("{\n" +
-                        "    \"firstnaaaame\": \"Sofya\",\n" +
-                        "    \"lastname\": \"Odegova\",\n" +
-                        "    \"totalprice\": 3500,\n" +
-                        "    \"depositpaid\": true,\n" +
-                        "    \"bookingdates\": {\n" +
-                        "        \"checkin\": \"2022-07-13\",\n" +
-                        "        \"checkout\": \"2022-07-23\"\n" +
-                        "    },\n" +
-                        "    \"additionalneeds\": \"Breakfast\"\n" +
-                        "}")
-                //.log().(true)
-                .contentType(ContentType.JSON)
-                .post("/booking")
-                .then()
-                .statusCode(500)
-                .log().status()
-                .extract()
-                .response().asString();
+    public static Response getBooking(String bookingId, Integer expectedStatusCode) {
 
-        System.out.println("Бронирование не создано, id не получен. Ошибка: " + response);
-    }
-
-    public static void getBooking(String bookingId, Integer expectedStatusCode) {
-
-        String response = getBaseRequest()
+        Response response = getBaseRequest()
                 .contentType(ContentType.JSON)
                 .get("/booking/" + bookingId)
                 .then()
                 .statusCode(expectedStatusCode)
                 .extract()
-                .response().asString();
+                .response();
         System.out.println(response);
+        return response;
     }
 
     public static void updateBooking(String token, String bookingid, Integer expectedStatusCode) {
@@ -129,19 +93,17 @@ public class RestRequests {
         System.out.println(response);
     }
 
-    public static void deleteBooking(String token, String bookingid, Integer expectedStatusCode) {
+    public static Response deleteBooking(String token, String bookingid, Integer statusCode) {
 
-        String response = getBaseRequest()
+        Response response = getBaseRequest()
                 .contentType(ContentType.JSON)
                 .header("Cookie", "token=" + token)
-                .body("{\n" +
-                        "    \"totalprice\" : 5000\n" +
-                        "}")
                 .delete("/booking/" + bookingid)
                 .then()
-                .statusCode(expectedStatusCode)
+                .statusCode(statusCode)
                 .extract()
-                .response().asString();
+                .response();
         System.out.println(response);
+        return response;
     }
 }
