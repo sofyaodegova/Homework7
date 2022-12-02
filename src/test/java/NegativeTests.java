@@ -39,8 +39,6 @@ public class NegativeTests {
 
     @Test
     public void negativeTestDeleteBooking() {
-        int expectedStatusCode = 200;
-
         String addBodyToken = "{\n\"username\":\"admin\"," +
                 "\n\"password\":\"password123\"\n}";
         String token = RestRequests.getToken(addBodyToken).jsonPath().get("token");

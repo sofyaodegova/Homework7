@@ -51,46 +51,34 @@ public class RestRequests {
         return response;
     }
 
-    public static void updateBooking(String token, String bookingid, Integer expectedStatusCode) {
+    public static Response updateBooking(String token, String updatedBody, String bookingid, Integer expectedStatusCode) {
 
-        String response = getBaseRequest()
+        Response response = getBaseRequest()
                 .contentType(ContentType.JSON)
                 .header("Cookie", "token=" + token)
-                .body("{\n" +
-                        "    \"firstname\" : \"Sofya\",\n" +
-                        "    \"lastname\" : \"Odegova\",\n" +
-                        "    \"totalprice\" : 3500,\n" +
-                        "    \"depositpaid\" : true,\n" +
-                        "    \"bookingdates\" : {\n" +
-                        "        \"checkin\" : \"2022-07-13\",\n" +
-                        "        \"checkout\" : \"2022-08-01\"\n" +
-                        "    },\n" +
-                        "    \"additionalneeds\" : \"Breakfast\"\n" +
-                        "}")
+                .body(updatedBody)
                 .log().body()
                 .put("/booking/" + bookingid)
                 .then()
                 .statusCode(expectedStatusCode)
                 .extract()
-                .response().asString();
-        System.out.println(response);
+                .response();
+        return response;
     }
 
-    public static void partialUpdateBooking(String token, String bookingid, Integer expectedStatusCode) {
+    public static Response partialUpdateBooking(String token, String updatedBody, String bookingid, Integer expectedStatusCode) {
 
-        String response = getBaseRequest()
+        Response response = getBaseRequest()
                 .contentType(ContentType.JSON)
                 .header("Cookie", "token=" + token)
-                .body("{\n" +
-                        "    \"totalprice\" : 5000\n" +
-                        "}")
+                .body(updatedBody)
                 .log().body()
                 .patch("/booking/" + bookingid)
                 .then()
                 .statusCode(expectedStatusCode)
                 .extract()
-                .response().asString();
-        System.out.println(response);
+                .response();
+        return response;
     }
 
     public static Response deleteBooking(String token, String bookingid, Integer statusCode) {
@@ -103,7 +91,6 @@ public class RestRequests {
                 .statusCode(statusCode)
                 .extract()
                 .response();
-        System.out.println(response);
         return response;
     }
 }
